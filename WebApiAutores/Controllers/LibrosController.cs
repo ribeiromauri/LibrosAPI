@@ -32,7 +32,13 @@ namespace WebApiAutores.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<LibroDTO>> Get(int id)
         {
-            var libro = await context.Libros.FirstOrDefaultAsync(libroDB => libroDB.Id == id);
+            var libro = await context.Libros
+                .Include(libroDb => libroDb.AutoresLibros) //sería como un inner join y el thenInclude anidado
+                .ThenInclude(autorLibroDb  => autorLibroDb.Autor)
+                .FirstOrDefaultAsync(libroDB => libroDB.Id == id);
+
+            libro.AutoresLibros = libro.AutoresLibros.OrderBy(x => x.Orden).ToList(); //ordena la lista por numero de orden del autor 
+
             return mapper.Map<LibroDTO>(libro);            
         }
 
