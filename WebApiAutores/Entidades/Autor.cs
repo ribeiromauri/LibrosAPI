@@ -8,7 +8,8 @@ namespace WebApiAutores.Entidades
         public int Id { get; set; }
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [StringLength(100)]
-        public string Nombre { get; set; }        
+        public string Nombre { get; set; }
+        public List<AutorLibro> AutoresLibros { get; set; }
 
     }
 }
