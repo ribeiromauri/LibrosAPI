@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WebApiAutores.DTOs
 {
@@ -6,6 +7,6 @@ namespace WebApiAutores.DTOs
     {
         public int Id { get; set; }       
         public string Titulo { get; set; }
-        
+        public DateTime FechaPublicacion { get; set; }
     }
 }
