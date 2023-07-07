@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApiAutores.DTOs;
 using WebApiAutores.Entidades;
@@ -20,10 +21,32 @@ namespace WebApiAutores.Controllers
             this.context = context;
             this.mapper = mapper;
         }
+
         [HttpGet]
-        public async Task<ActionResult<List<Autor>>> Get()
+        public async Task<ActionResult<List<AutorDTO>>> Get()
         {
-            return await context.Autores.ToListAsync();
+            var autores = await context.Autores.ToListAsync();
+            return mapper.Map<List<AutorDTO>>(autores);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AutorDTO>> Get(int id)
+        {
+            var autor = await context.Autores.FirstOrDefaultAsync(autorDb => autorDb.Id == id);
+
+            if(autor is null)
+            {
+                return NotFound();
+            }
+
+            return mapper.Map<AutorDTO>(autor);
+        }
+
+        [HttpGet("nombre")]
+        public async Task<ActionResult<List<AutorDTO>>> Get([FromRoute] string nombre)
+        {
+            var autores = await context.Autores.Where(autorDb => autorDb.Nombre.Contains(nombre)).ToListAsync();
+            return mapper.Map<List<AutorDTO>>(autores);
         }
 
         [HttpPost]
