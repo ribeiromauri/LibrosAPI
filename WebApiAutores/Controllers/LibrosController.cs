@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApiAutores.DTOs;
 using WebApiAutores.Entidades;
@@ -38,12 +39,18 @@ namespace WebApiAutores.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(LibroCreacionDTO libroCreacionDTO)
         {
-            /*var existeAutor = await context.Autores.AnyAsync(x => x.Id == libro.AutorId);
-
-            if (!existeAutor)
+            if (libroCreacionDTO.AutoresIds == null)
             {
-                return BadRequest($"No existe el autor de Id: {libro.AutorId}");
-            }*/
+                return BadRequest("No se puede crear un libro sin autores");
+            }
+
+            var autoresIds = await context.Autores.Where(autorBD => libroCreacionDTO.AutoresIds.Contains(autorBD.Id)).Select(x => x.Id).ToListAsync();
+
+            if (libroCreacionDTO.AutoresIds.Count != autoresIds.Count)
+            {
+                return BadRequest("No existe uno de los autores enviados");
+            }
+
             var libro = mapper.Map<Libro>(libroCreacionDTO);
             context.Add(libro);
             await context.SaveChangesAsync();
